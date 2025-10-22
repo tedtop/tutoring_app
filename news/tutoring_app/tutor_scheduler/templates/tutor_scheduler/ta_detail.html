@@ -1,0 +1,59 @@
+{% extends 'tutor_scheduler/base.html' %}
+
+{% block title %}{{ ta }} - TA Profile{% endblock %}
+
+{% block content %}
+<h2>{{ ta.user.first_name }} {{ ta.user.last_name }}</h2>
+
+<div class="card">
+    <p><strong>Email:</strong> {{ ta.user.email }}</p>
+    <p><strong>Major:</strong> {{ ta.major }}</p>
+
+    {% if ta.bio %}
+    <p><strong>Bio:</strong></p>
+    <p>{{ ta.bio }}</p>
+    {% endif %}
+
+    <p><strong>Can tutor for:</strong></p>
+    <ul>
+        {% for course in ta.courses.all %}
+            <li>{{ course }}</li>
+        {% empty %}
+            <li>No courses specified</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<h3>Tutoring Hours</h3>
+{% if active_hours %}
+    {% regroup active_hours by day_of_week as day_list %}
+    {% for day in day_list %}
+    <div class="day-section">
+        <h4>{{ day.grouper|add:0|stringformat:"d" }}
+            {% if day.grouper == 0 %}Monday
+            {% elif day.grouper == 1 %}Tuesday
+            {% elif day.grouper == 2 %}Wednesday
+            {% elif day.grouper == 3 %}Thursday
+            {% elif day.grouper == 4 %}Friday
+            {% elif day.grouper == 5 %}Saturday
+            {% elif day.grouper == 6 %}Sunday
+            {% endif %}
+        </h4>
+        {% for hour in day.list %}
+        <div class="hour-item">
+            {{ hour.start_time|time:"g:i A" }} - {{ hour.end_time|time:"g:i A" }}
+            {% if hour.is_recurring and hour.until_date %}
+                <br><em>Available until {{ hour.until_date }}</em>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No tutoring hours scheduled.</p>
+{% endif %}
+
+<p style="margin-top: 2rem;">
+    <a href="{% url 'home' %}" class="btn btn-secondary">Back to Schedule</a>
+</p>
+{% endblock %}

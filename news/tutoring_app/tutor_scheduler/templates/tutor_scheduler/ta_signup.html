@@ -1,0 +1,54 @@
+{% extends 'tutor_scheduler/base.html' %}
+
+{% block title %}Sign Up as TA{% endblock %}
+
+{% block content %}
+<h2>Sign Up as a TA</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <h3>Account Information</h3>
+    <p>
+        <label for="id_username">Username:</label>
+        {{ user_form.username }}
+        {{ user_form.username.errors }}
+    </p>
+
+    <p>
+        <label for="id_first_name">First Name:</label>
+        <input type="text" name="first_name" id="id_first_name" required>
+    </p>
+
+    <p>
+        <label for="id_last_name">Last Name:</label>
+        <input type="text" name="last_name" id="id_last_name" required>
+    </p>
+
+    <p>
+        <label for="id_email">Email:</label>
+        <input type="email" name="email" id="id_email" required>
+    </p>
+
+    <p>
+        <label for="id_password1">Password:</label>
+        {{ user_form.password1 }}
+        {{ user_form.password1.errors }}
+        <span class="helptext">{{ user_form.password1.help_text }}</span>
+    </p>
+
+    <p>
+        <label for="id_password2">Confirm Password:</label>
+        {{ user_form.password2 }}
+        {{ user_form.password2.errors }}
+    </p>
+
+    <h3>TA Information</h3>
+    {{ ta_form.as_p }}
+
+    <p>
+        <button type="submit" class="btn">Sign Up</button>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+    </p>
+</form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'tutor_scheduler/base.html' %}
+
+{% block title %}Edit Tutoring Hour{% endblock %}
+
+{% block content %}
+<h2>Edit Tutoring Hour</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p>
+        <button type="submit" class="btn">Update Hour</button>
+        <a href="{% url 'ta_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </p>
+</form>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'tutor_scheduler/base.html' %}
+
+{% block title %}TA Dashboard{% endblock %}
+
+{% block content %}
+<h2>Welcome, {{ ta.user.first_name }}!</h2>
+
+<div class="card">
+    <p><strong>Email:</strong> {{ ta.user.email }}</p>
+    <p><strong>Major:</strong> {{ ta.major }}</p>
+    <p><strong>Courses:</strong>
+        {% for course in ta.courses.all %}
+            {{ course }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+            None
+        {% endfor %}
+    </p>
+</div>
+
+<h3>Your Tutoring Hours</h3>
+<p>
+    <a href="{% url 'add_tutoring_hour' %}" class="btn">Add New Tutoring Hour</a>
+</p>
+
+{% if active_hours %}
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Recurring</th>
+                <th>Until Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hour in active_hours %}
+            <tr>
+                <td>{{ hour.get_day_of_week_display }}</td>
+                <td>{{ hour.start_time|time:"g:i A" }} - {{ hour.end_time|time:"g:i A" }}</td>
+                <td>{{ hour.is_recurring|yesno:"Yes,No" }}</td>
+                <td>{{ hour.until_date|default:"N/A" }}</td>
+                <td>
+                    <a href="{% url 'edit_tutoring_hour' hour.id %}" class="btn">Edit</a>
+                    <a href="{% url 'delete_tutoring_hour' hour.id %}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>You haven't added any tutoring hours yet.</p>
+{% endif %}
+{% endblock %}

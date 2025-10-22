@@ -1,0 +1,99 @@
+{% extends 'tutor_scheduler/base.html' %}
+
+{% block title %}Tutoring Hours - CS Fishbowl{% endblock %}
+
+{% block content %}
+<h2>CS Fishbowl Tutoring Hours</h2>
+
+<div class="tabs">
+    <button class="tab active" onclick="showTab('day-view')">View by Day</button>
+    <button class="tab" onclick="showTab('course-view')">View by Course</button>
+</div>
+
+<div id="day-view" class="tab-content active">
+    <h3>Tutoring Hours by Day</h3>
+    {% if hours_by_day %}
+        {% for day, hours in hours_by_day.items %}
+            {% if hours %}
+            <div class="day-section">
+                <h3>{{ day }}</h3>
+                {% for hour in hours %}
+                <div class="hour-item">
+                    <strong>
+                        <a href="{% url 'ta_detail' hour.ta.id %}" class="ta-link">
+                            {{ hour.ta }}
+                        </a>
+                    </strong>
+                    <br>
+                    Time: {{ hour.start_time|time:"g:i A" }} - {{ hour.end_time|time:"g:i A" }}
+                    <br>
+                    Courses:
+                    {% for course in hour.ta.courses.all %}
+                        {{ course }}{% if not forloop.last %}, {% endif %}
+                    {% empty %}
+                        Not specified
+                    {% endfor %}
+                    {% if hour.is_recurring and hour.until_date %}
+                        <br><em>Available until {{ hour.until_date }}</em>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>No tutoring hours scheduled yet.</p>
+    {% endif %}
+</div>
+
+<div id="course-view" class="tab-content">
+    <h3>Tutoring Hours by Course</h3>
+    {% if hours_by_course %}
+        {% for course, hours in hours_by_course.items %}
+        <div class="day-section">
+            <h3>{{ course }}</h3>
+            {% for hour in hours %}
+            <div class="hour-item">
+                <strong>
+                    <a href="{% url 'ta_detail' hour.ta.id %}" class="ta-link">
+                        {{ hour.ta }}
+                    </a>
+                </strong>
+                <br>
+                {{ hour.get_day_of_week_display }}: {{ hour.start_time|time:"g:i A" }} - {{ hour.end_time|time:"g:i A" }}
+                {% if hour.is_recurring and hour.until_date %}
+                    <br><em>Available until {{ hour.until_date }}</em>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No tutoring hours scheduled yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(tabId) {
+    // Hide all tab contents
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // Deactivate all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Show selected tab content
+    document.getElementById(tabId).classList.add('active');
+
+    // Activate clicked tab
+    event.target.classList.add('active');
+}
+</script>
+{% endblock %}
